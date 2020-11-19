@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:1.18.0-alpine
 EXPOSE 8080
 
 # The following lines make this image compatible with OpenShift.

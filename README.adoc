@@ -1,4 +1,4 @@
 = VSHN Documentation nginx Image
 
-This Docker image is based in `nginx:stable-alpine` and is compatible with OpenShift.
+This Docker image is based in `nginx:1.19.6-alpine` and is compatible with OpenShift.
 

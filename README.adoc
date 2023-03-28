@@ -1,4 +1,3 @@
-= VSHN Documentation nginx Image
+= VSHN Documentation Nginx container Image
 
-This Docker image is based on the latest `nginx:1.xx.x-alpine` image, and is compatible with OpenShift.
-
+This container image is based on the latest `nginx:1.xx.x-alpine` image, and is compatible with OpenShift.

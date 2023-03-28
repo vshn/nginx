@@ -13,4 +13,3 @@ RUN \
 COPY default.conf /etc/nginx/conf.d/default.conf
 
 USER 1001:0
-

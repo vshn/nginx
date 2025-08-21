@@ -1,4 +1,4 @@
-FROM docker.io/nginx:1.29.0-alpine
+FROM docker.io/nginx:1.29.1-alpine
 EXPOSE 8080
 
 # The following lines make this image compatible with OpenShift.

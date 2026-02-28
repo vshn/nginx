@@ -1,13 +1,16 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     ":assignee(arska)"
   ],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "automerge": true
     }
   ]
-  
 }

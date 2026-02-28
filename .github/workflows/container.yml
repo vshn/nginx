@@ -22,13 +22,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create version tag
-        if: github.ref == 'refs/heads/master'
+      - name: Extract nginx version
+        id: nginx
         run: |
           VERSION=$(sed -n 's/^FROM docker\.io\/nginx:\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' Dockerfile)
-          if [ -n "$VERSION" ] && ! git rev-parse "$VERSION" >/dev/null 2>&1; then
-            git tag "$VERSION"
-            git push origin "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create git tag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          if ! git rev-parse "${{ steps.nginx.outputs.version }}" >/dev/null 2>&1; then
+            git tag "${{ steps.nginx.outputs.version }}"
+            git push origin "${{ steps.nginx.outputs.version }}"
           fi
 
       - name: Set up QEMU
@@ -51,6 +56,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=raw,value=${{ steps.nginx.outputs.version }},enable=${{ github.ref == 'refs/heads/master' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6

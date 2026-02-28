@@ -28,12 +28,16 @@ jobs:
           VERSION=$(sed -n 's/^FROM docker\.io\/nginx:\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' Dockerfile)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Create git tag
+      - name: Create git tag and release
         if: github.ref == 'refs/heads/master'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if ! git rev-parse "${{ steps.nginx.outputs.version }}" >/dev/null 2>&1; then
-            git tag "${{ steps.nginx.outputs.version }}"
-            git push origin "${{ steps.nginx.outputs.version }}"
+          VERSION="${{ steps.nginx.outputs.version }}"
+          if ! git rev-parse "$VERSION" >/dev/null 2>&1; then
+            git tag "$VERSION"
+            git push origin "$VERSION"
+            gh release create "$VERSION" --title "$VERSION" --generate-notes
           fi
 
       - name: Set up QEMU

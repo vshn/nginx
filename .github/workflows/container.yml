@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Extract nginx version
         id: nginx
@@ -34,7 +36,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ steps.nginx.outputs.version }}"
-          if ! git rev-parse "$VERSION" >/dev/null 2>&1; then
+          if git ls-remote --tags origin "refs/tags/$VERSION" | grep -q .; then
+            echo "Tag $VERSION already exists, skipping"
+          else
             git tag "$VERSION"
             git push origin "$VERSION"
             gh release create "$VERSION" --title "$VERSION" --generate-notes

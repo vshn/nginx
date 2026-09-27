@@ -24,11 +24,19 @@ jobs:
         with:
           fetch-tags: true
 
-      - name: Extract nginx version
+      # The image is released as <nginx-version>.<revision>, like vshn/antora, so a change to
+      # default.conf gets its own release instead of overwriting the tag of the nginx version it
+      # happens to sit on. Bump REVISION when the config changes and the nginx version has not.
+      - name: Determine image version
         id: nginx
         run: |
-          VERSION=$(sed -n 's/^FROM docker\.io\/nginx:\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' Dockerfile)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          NGINX_VERSION=$(sed -n 's/^FROM docker\.io\/nginx:\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' Dockerfile)
+          REVISION=$(tr -d '[:space:]' < REVISION)
+          if [ -z "$NGINX_VERSION" ] || [ -z "$REVISION" ]; then
+            echo "cannot determine version: nginx='$NGINX_VERSION' revision='$REVISION'" >&2
+            exit 1
+          fi
+          echo "version=${NGINX_VERSION}.${REVISION}" >> "$GITHUB_OUTPUT"
 
       - name: Create git tag and release
         if: github.ref == 'refs/heads/master'

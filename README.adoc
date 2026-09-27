@@ -1,3 +1,21 @@
 = VSHN Documentation Nginx container Image
 
 This container image is based on the latest `nginx:1.xx.x-alpine` image, and is compatible with OpenShift.
+
+== Versions
+
+The image is published as `<nginx-version>.<revision>`, for example `1.31.6.1`. The revision comes
+from the `REVISION` file, so a change to `default.conf` gets a release of its own rather than
+overwriting the tag of whatever nginx version it happens to sit on. Bump `REVISION` in the same pull
+request as the config change; a new nginx version starts over from whatever the file says.
+
+Pin the full version, and give Renovate this rule, because a four-part version is not semver:
+
+[source,json]
+----
+{
+  "matchPackageNames": ["vshn/nginx"],
+  "versioning": "loose",
+  "description": "Releases are <nginx-version>.<revision>, which is not semver"
+}
+----
